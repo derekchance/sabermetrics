@@ -10,13 +10,6 @@ from bs4 import BeautifulSoup
 import pandas as pd
 
 
-
-url = 'https://www.leaguelineup.com/standings_baseball.asp?url=labaseballleague&divisionid=816248&listtype=1'
-
-response = requests.get(url)
-
-soup = BeautifulSoup(response.text, 'html.parser')
-
 def scrape_df(soup):
     '''
     Converts soup object from labl stats page into a pandas dataframe
