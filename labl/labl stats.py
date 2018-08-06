@@ -34,7 +34,7 @@ stats_df['PA'] = stats_df['AB'] + stats_df['BB'] + stats_df['HBP'] + stats_df['S
 w_col = ['1B', '2B', '3B', 'HR', 'BB', 'HBP']
 
 totals_df = stats_df.sum().loc['AVG':]
-totals_df['AVG'] = totals_df.H / total_df.AB
+totals_df['AVG'] = totals_df.H / totals_df.AB
 totals_df['OBP'] = (totals_df.H + totals_df.BB + totals_df.HBP) / totals_df.PA
 totals_df['SLG'] = totals_df.TB / totals_df.AB
 totals_df['OPS'] = totals_df.OBP + totals_df.SLG
