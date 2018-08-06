@@ -78,7 +78,6 @@ def get_runs_per_game():
     return runs / games    
     
 
-
 def get_player_stats():
     '''
     Returns stats for all rostered labl National division players
@@ -93,5 +92,3 @@ def get_player_stats():
         dfs.append(scrape_df(soup))
     
     return pd.concat(dfs, keys=list(team_dict.values()))
-        
-        

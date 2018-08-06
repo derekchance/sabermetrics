@@ -153,4 +153,3 @@ def off_war(df, league):
         return df['oRAR'] / rtw
     except:
         return off_rar(df) / rtw
-    
