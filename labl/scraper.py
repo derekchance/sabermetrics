@@ -52,6 +52,32 @@ def get_teams():
     return team_dict
 
 
+def get_runs_per_game():
+    '''
+    Returns stats for all labl National division teams
+    '''
+    url = 'https://www.leaguelineup.com/standings_baseball.asp?url=labaseballleague&divisionid=816248&listtype=4'
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, 'html.parser')
+    
+    table = []
+    for tr in soup.find_all('tr')[3: len(soup.find_all('tr'))-1]:
+        tds = []
+        for td in tr.find_all('td')[1:]:
+            try:
+                tds.append(td.find('a').contents[0])
+            except:
+                try: 
+                    tds.append(td.contents[0])
+                except: tds.append(0)
+        table.append(tds)
+    
+    df = pd.DataFrame(table)
+    games = df[1].astype(float).sum()
+    runs = df[3].astype(float).sum()
+    return runs / games    
+    
+
 
 def get_player_stats():
     '''
