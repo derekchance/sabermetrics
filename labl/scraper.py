@@ -16,7 +16,7 @@ def scrape_df(soup):
     '''
     table = []
     cols = []
-    
+
     for th in soup.find('tr').find_all('th')[1:]:
         cols.append(th.find('a').contents[0])
     for tr in soup.find_all('tr')[2: len(soup.find_all('tr'))-1]:
@@ -25,26 +25,26 @@ def scrape_df(soup):
             try:
                 tds.append(td.find('a').contents[0])
             except:
-                try: 
+                try:
                     tds.append(td.contents[0])
                 except: tds.append(0)
         table.append(tds)
-        
+
     df = pd.DataFrame(table,
                       columns=cols)
-    
+
     return df
 
 
 def get_teams():
     '''
     returns list of teams with team_id as keys
-    '''    
+    '''
     url = 'https://www.leaguelineup.com/standings_baseball.asp?url=labaseballleague&divisionid=816248&listtype=4'
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
     team_dict = {}
-    
+
     for tr in soup.find_all('tr')[3: len(soup.find_all('tr'))-1]:
         team_name = tr.find('td').find('a').contents[0]
         team_id = tr.find('td').find('a').get('href').split('=')[2]
@@ -59,7 +59,7 @@ def get_runs_per_game():
     url = 'https://www.leaguelineup.com/standings_baseball.asp?url=labaseballleague&divisionid=816248&listtype=4'
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
-    
+
     table = []
     for tr in soup.find_all('tr')[3: len(soup.find_all('tr'))-1]:
         tds = []
@@ -67,16 +67,16 @@ def get_runs_per_game():
             try:
                 tds.append(td.find('a').contents[0])
             except:
-                try: 
+                try:
                     tds.append(td.contents[0])
                 except: tds.append(0)
         table.append(tds)
-    
+
     df = pd.DataFrame(table)
     games = df[1].astype(float).sum()
     runs = df[3].astype(float).sum()
-    return runs / games    
-    
+    return runs / games
+
 
 def get_player_stats():
     '''
@@ -84,11 +84,15 @@ def get_player_stats():
     '''
     team_dict = get_teams()
     dfs = []
-    
+
     for team_id in team_dict:
         url = f'https://www.leaguelineup.com/teams_baseball.asp?url=labaseballleague&Teamid={team_id}'
         response = requests.get(url)
         soup = BeautifulSoup(response.text, 'html.parser')
         dfs.append(scrape_df(soup))
-    
-    return pd.concat(dfs, keys=list(team_dict.values()))
+
+    df = pd.concat(dfs, keys=list(team_dict.values()))
+    df['Name'] = df.Name.astype(str).str.replace('<font color="green">','')
+    df['Name'] = df.Name.astype(str).str.replace('<font color="gray">','')
+    df['Name'] = df.Name.astype(str).str.replace(r'</font>','')
+    return df
