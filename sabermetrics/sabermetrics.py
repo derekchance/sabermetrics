@@ -14,6 +14,7 @@ def singles(df):
     '''
     Returns series with number of Singles
     '''
+
     return df['H'] - df['2B'] - df['3B'] - df['HR']
 
 
@@ -28,7 +29,7 @@ def pa(df):
     '''
     Returns series with number of Plate Appearances
     '''
-    df['AB'] + df['BB'] + df['HBP'] + df['SF']
+    return df['AB'] + df['BB'] + df['HBP'] + df['SF']
 
 
 def batting_avg(df):
@@ -81,7 +82,7 @@ def woba(df, league):
     if league == 'labl':
         runs = get_runs_per_game()
         weights = run_weights(runs)
-    
+
     return df[w_col].dot(weights[w_col]) / df.PA
 
 
@@ -92,7 +93,7 @@ def wraa(df, league):
     if league == 'labl':
         woba_scale = 1.1
     sum_df = df.sum()
-    sum_df['wOBA'] = woba(df, league)
+    sum_df['wOBA'] = woba(sum_df, league)
     try:
         return ((df['wOBA'] - sum_df['wOBA'])/woba_scale) * df['PA']
     except:
@@ -107,11 +108,12 @@ def wrc(df, league):
         woba_scale = 1.1
         rpg = get_runs_per_game()
     sum_df = df.sum()
-    sum_df['wOBA'] = woba(df, league)
+    sum_df['wOBA'] = woba(sum_df, league)
+    rpa = sum_df['R'] / sum_df['PA']
     try:
-        return ((df['wOBA'] - sum_df['wOBA'])/woba_scale + rpg) * df['PA']
+        return (((df['wOBA'] - sum_df['wOBA'])/woba_scale) + rpa) * df['PA']
     except:
-        return ((woba(df, league) - sum_df['wOBA'])/woba_scale + rpg) * df['PA']
+        return (((woba(df, league) - sum_df['wOBA'])/woba_scale) + rpa) * df['PA']
 
 
 def wrc_plus(df, league):
@@ -119,7 +121,7 @@ def wrc_plus(df, league):
     Returns series with wRC+
     '''
     sum_df = df.sum()
-    sum_df['wOBA'] = woba(df, league)
+    sum_df['wOBA'] = woba(sum_df, league)
     rpa = sum_df['R'] / sum_df['PA']
     try:
         numerator = (df['wRAA'] / df['PA']) + rpa
@@ -128,7 +130,7 @@ def wrc_plus(df, league):
     try:
         denominator = sum_df['wRC'] / sum_df['PA']
     except:
-        denominator = (wrc(df, league).sum() / sum_df['PA'])
+        denominator = (wrc(sum_df, league).sum() / sum_df['PA'])
     return (numerator / denominator) * 100.0
 
 

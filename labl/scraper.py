@@ -95,4 +95,14 @@ def get_player_stats():
     df['Name'] = df.Name.astype(str).str.replace('<font color="green">','')
     df['Name'] = df.Name.astype(str).str.replace('<font color="gray">','')
     df['Name'] = df.Name.astype(str).str.replace(r'</font>','')
+    df = _transform_types(df)
+    return df
+
+
+def _transform_types(df):
+    for col in df.columns:
+        try:
+            df[col] = df[col].astype(float)
+        except:
+            pass
     return df
